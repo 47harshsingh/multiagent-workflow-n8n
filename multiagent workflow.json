@@ -1,0 +1,823 @@
+{
+    "name": "My workflow",
+    "nodes": [
+        {
+            "parameters": {
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.4,
+            "position": [
+                -96,
+                -416
+            ],
+            "id": "c14c1bdc-09c2-4da2-b99b-9077d952ae43",
+            "name": "When chat message received",
+            "webhookId": "dbe8e16b-6271-4853-b89e-aff4a835e42a"
+        },
+        {
+            "parameters": {
+                "options": {
+                    "systemMessage": "You are a master orchestrator who handles all things email, Cal, and meetings.\n1. If a user queries related to emails, direct that particular request to the email agent\nand proceed ahead.\n2. If the user request is related to the calendar, direct that to the calendar agent and\nproceed ahead.\n3. If the user request is related to the meetings agent, direct that to the meetings\nagent and proceed ahead.\n4. If the user request is either related to email, calendar or meetings, or a combination\nof them, then call the appropriate agents in the order of priority. Use the reasoning as\nper the user request and proceed ahead."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3.1,
+            "position": [
+                448,
+                -416
+            ],
+            "id": "8682f07b-6546-47a6-8ba2-87644fdb5915",
+            "name": "Master Orchestrator Agent"
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.4,
+            "position": [
+                320,
+                -192
+            ],
+            "id": "50e3e818-e90e-4321-8539-aacdfd7bf25e",
+            "name": "Simple Memory"
+        },
+        {
+            "parameters": {
+                "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+                "options": {
+                    "systemMessage": "You are an expert email assistant who can do all things email.\n1. If a user inquires to fetch or get an email, use the Get Many Messages Gmail tool and\nproceed further.\n2. If a user asks to send an email or compose an email, use the Send an email tool and\nproceed further.\n3. If the user asks to create a draft or spin up a message faster, always use the Create\na Draft tool and proceed further.\n4. If the user either asks to reply or delete:\na. First use the Get many messages tool to read the inbox.\nb. Select the email in focus and extract its Message ID.\nc. Use that Message ID in the reply or delete tool.\n\n"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agentTool",
+            "typeVersion": 3,
+            "position": [
+                560,
+                -192
+            ],
+            "id": "f9ac6ef1-03b6-402c-9b79-78d597593d10",
+            "name": "Email Agent"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-5",
+                    "cachedResultName": "Claude Sonnet 5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.6,
+            "position": [
+                192,
+                -192
+            ],
+            "id": "507cc72b-55d3-4d3e-bc77-54bb11117350",
+            "name": "Anthropic Chat Model",
+            "credentials": {
+                "anthropicApi": {
+                    "id": null,
+                    "name": "",
+                    "__aiGatewayManaged": true
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-5",
+                    "cachedResultName": "Claude Sonnet 5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.6,
+            "position": [
+                48,
+                144
+            ],
+            "id": "8662a73d-1243-440d-a292-828cc4b9597a",
+            "name": "Anthropic Chat Model1",
+            "credentials": {
+                "anthropicApi": {
+                    "id": null,
+                    "name": "",
+                    "__aiGatewayManaged": true
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.4,
+            "position": [
+                208,
+                144
+            ],
+            "id": "32e9c3cc-00df-4d49-8071-b1a3c432d41e",
+            "name": "Simple Memory1"
+        },
+        {
+            "parameters": {
+                "operation": "getAll",
+                "filters": {}
+            },
+            "type": "n8n-nodes-base.gmailTool",
+            "typeVersion": 2.2,
+            "position": [
+                592,
+                256
+            ],
+            "id": "b03d43ed-0094-4d16-b3dd-411518d473b5",
+            "name": "Get many messages in Gmail",
+            "webhookId": "95e02567-37b7-43ae-a0cc-492343ed648a",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CwmuVkZXPT1FF5ez",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+                "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+                "emailType": "text",
+                "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmailTool",
+            "typeVersion": 2.2,
+            "position": [
+                432,
+                96
+            ],
+            "id": "c4310b52-d2a1-45d0-a30a-f1289debc00e",
+            "name": "Send a message in Gmail",
+            "webhookId": "2ffcc113-63d5-45df-a7e0-5500000408d8",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CwmuVkZXPT1FF5ez",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "resource": "draft",
+                "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+                "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmailTool",
+            "typeVersion": 2.2,
+            "position": [
+                752,
+                176
+            ],
+            "id": "3dd592d0-c0bb-4452-a624-1ceccea2180f",
+            "name": "Create a draft in Gmail",
+            "webhookId": "ccba0bd5-9ca4-46b3-955c-7d5f0585b7f8",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CwmuVkZXPT1FF5ez",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "reply",
+                "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+                "emailType": "text",
+                "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.gmailTool",
+            "typeVersion": 2.2,
+            "position": [
+                896,
+                64
+            ],
+            "id": "070710d1-7fa9-4387-a4df-7316de896a97",
+            "name": "Reply to a message in Gmail",
+            "webhookId": "d7865e86-ae92-46ac-9bb0-faaafe7fe6a2",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CwmuVkZXPT1FF5ez",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "delete",
+                "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}"
+            },
+            "type": "n8n-nodes-base.gmailTool",
+            "typeVersion": 2.2,
+            "position": [
+                1072,
+                96
+            ],
+            "id": "f4cd5c63-057e-459e-8696-3059f78a6d95",
+            "name": "Delete a message in Gmail",
+            "webhookId": "6fd816f7-c460-46ed-8302-f6393bb7f48e",
+            "credentials": {
+                "gmailOAuth2": {
+                    "id": "CwmuVkZXPT1FF5ez",
+                    "name": "Gmail account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+                "options": {
+                    "systemMessage": "You are an expert event assistant who can do all things events.\n1. If a user inquires to fetch or get an event, use the Get Many Events tool and proceed\nfurther.\n2. If a user asks to create an event, use the Create an event tool and proceed further.\n3. If the user asks to get availability, always use the Check availability tool and\nproceed further.\n4. If the user asks to update or delete an event:\na. First use Get many events to read the calendar.\nb. Select the event in focus and extract its Event ID.\nc. Use that Event ID in the update or delete tool."
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agentTool",
+            "typeVersion": 3,
+            "position": [
+                1504,
+                -240
+            ],
+            "id": "73d49030-b8a7-42c2-9817-0c609645cd9e",
+            "name": "Calendar Agent"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-5",
+                    "cachedResultName": "Claude Sonnet 5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.6,
+            "position": [
+                1200,
+                -48
+            ],
+            "id": "c52abae1-3241-4ec6-8d83-9f79e8626f75",
+            "name": "Anthropic Chat Model2",
+            "credentials": {
+                "anthropicApi": {
+                    "id": null,
+                    "name": "",
+                    "__aiGatewayManaged": true
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.4,
+            "position": [
+                1328,
+                16
+            ],
+            "id": "ac9a1a53-702b-4050-bd39-a9f1db343756",
+            "name": "Simple Memory2"
+        },
+        {
+            "parameters": {
+                "operation": "getAll",
+                "calendar": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}"
+                },
+                "returnAll": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Return_All', ``, 'boolean') }}",
+                "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('After', ``, 'string') }}",
+                "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Before', ``, 'string') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleCalendarTool",
+            "typeVersion": 1.3,
+            "position": [
+                1472,
+                32
+            ],
+            "id": "9d3b2c45-684e-458b-abc7-bd01bd12de8d",
+            "name": "Get many events in Google Calendar",
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "sAKnDK3M0Trn9bhX",
+                    "name": "Google Calendar account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "calendar": {
+                    "__rl": true,
+                    "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+                    "mode": "id",
+                    "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+                },
+                "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', ``, 'string') }}",
+                "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+                "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+                "additionalFields": {}
+            },
+            "type": "n8n-nodes-base.googleCalendarTool",
+            "typeVersion": 1.3,
+            "position": [
+                1616,
+                80
+            ],
+            "id": "39d1e39d-d0a8-4138-a812-59c5bfc1bac1",
+            "name": "Create an event in Google Calendar",
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "sAKnDK3M0Trn9bhX",
+                    "name": "Google Calendar account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "update",
+                "calendar": {
+                    "__rl": true,
+                    "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+                    "mode": "id",
+                    "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+                },
+                "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+                "useDefaultReminders": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Use_Default_Reminders', ``, 'boolean') }}",
+                "updateFields": {}
+            },
+            "type": "n8n-nodes-base.googleCalendarTool",
+            "typeVersion": 1.3,
+            "position": [
+                1760,
+                16
+            ],
+            "id": "9326dffc-bea1-4d0c-a2a5-0403ad4a44a0",
+            "name": "Update an event in Google Calendar",
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "sAKnDK3M0Trn9bhX",
+                    "name": "Google Calendar account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "resource": "calendar",
+                "calendar": {
+                    "__rl": true,
+                    "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+                    "mode": "id",
+                    "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+                },
+                "timeMin": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Time', ``, 'string') }}",
+                "timeMax": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End_Time', ``, 'string') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleCalendarTool",
+            "typeVersion": 1.3,
+            "position": [
+                1936,
+                48
+            ],
+            "id": "2fda7560-9384-48a4-a90f-3b964fe84692",
+            "name": "Get availability in a calendar in Google Calendar",
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "sAKnDK3M0Trn9bhX",
+                    "name": "Google Calendar account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "delete",
+                "calendar": {
+                    "__rl": true,
+                    "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Calendar', ``, 'string') }}",
+                    "mode": "id",
+                    "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+                },
+                "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.googleCalendarTool",
+            "typeVersion": 1.3,
+            "position": [
+                2112,
+                48
+            ],
+            "id": "85470c9f-1f02-463e-af08-8b057fb6b468",
+            "name": "Delete an event in Google Calendar",
+            "credentials": {
+                "googleCalendarOAuth2Api": {
+                    "id": "sAKnDK3M0Trn9bhX",
+                    "name": "Google Calendar account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "text": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Prompt__User_Message_', ``, 'string') }}",
+                "options": {
+                    "systemMessage": "You are an expert meeting analysis agent.\n1. First fetch the list of transcripts from Fireflies using Get list of transcripts.\n2. Extract the required Transcript ID for the meeting in focus.\n3. Use this format with Get the full transcript:\n{\n\"query\": \"query Transcript($transcriptId: String!) { transcript(id: $transcriptId) {\ntitle id sentences { speaker_name text start_time end_time } summary { overview\naction_items } } }\",\n\"variables\": { \"transcriptId\": \"place_extracted_transcript_id_here\" }\n}\n"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agentTool",
+            "typeVersion": 3,
+            "position": [
+                2064,
+                -592
+            ],
+            "id": "c0abbd95-2d28-47db-89d6-a9b062247ebd",
+            "name": "Meetings Agent"
+        },
+        {
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "claude-sonnet-5",
+                    "cachedResultName": "Claude Sonnet 5"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+            "typeVersion": 1.6,
+            "position": [
+                1792,
+                -384
+            ],
+            "id": "af39f807-fbc1-4c69-b09f-55d23aa2070e",
+            "name": "Anthropic Chat Model3",
+            "credentials": {
+                "anthropicApi": {
+                    "id": null,
+                    "name": "",
+                    "__aiGatewayManaged": true
+                }
+            }
+        },
+        {
+            "parameters": {},
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.4,
+            "position": [
+                1968,
+                -320
+            ],
+            "id": "909485f2-03f8-44ff-8aed-95c3b1d69f66",
+            "name": "Simple Memory3"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": " https://api.fireflies.ai/graphql",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": " Authorisation",
+                            "value": "Bearer 48d8e912-5d4b-4145-869b"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "contentType": "form-urlencoded",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "query",
+                            "value": " { transcripts(limit: 10) { id title date } }"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequestTool",
+            "typeVersion": 4.5,
+            "position": [
+                2128,
+                -192
+            ],
+            "id": "af72b230-5fdd-4098-a678-e96576bfa546",
+            "name": "Get list of transcripts"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": " https://api.fireflies.ai/graphql",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": " Authorisation",
+                            "value": "Bearer 48d8e912-5d4b-ace69b"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', ``, 'json') }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequestTool",
+            "typeVersion": 4.5,
+            "position": [
+                2320,
+                -304
+            ],
+            "id": "43cdb875-d35c-4bc7-bc2e-5e7f67ae9619",
+            "name": "Get the full transcript"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "When chat message received": {
+            "main": [
+                [
+                    {
+                        "node": "Master Orchestrator Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Simple Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Master Orchestrator Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Email Agent": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Master Orchestrator Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Master Orchestrator Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model1": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Simple Memory1": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get many messages in Gmail": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send a message in Gmail": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create a draft in Gmail": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Reply to a message in Gmail": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Delete a message in Gmail": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Email Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Calendar Agent": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Master Orchestrator Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model2": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Simple Memory2": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get many events in Google Calendar": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create an event in Google Calendar": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update an event in Google Calendar": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get availability in a calendar in Google Calendar": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Delete an event in Google Calendar": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Calendar Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Meetings Agent": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Master Orchestrator Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Anthropic Chat Model3": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Meetings Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Simple Memory3": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Meetings Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get list of transcripts": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Meetings Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get the full transcript": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Meetings Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1",
+        "binaryMode": "separate"
+    },
+    "versionId": "a8dbb686-24db-45fa-ad04-82a497ff7a86",
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "85347be2124b01b60a4f5670157d9c3767fc933c445761cc58c6d55bcddc74d4"
+    },
+    "nodeGroups": [],
+    "id": "aWKc7a4vX9MSQk0I",
+    "tags": []
+}
