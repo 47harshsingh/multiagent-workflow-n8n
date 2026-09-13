@@ -1,6 +1,6 @@
-# Jerry — Multi-Agent AI Assistant (n8n)
+# Multi-Agent AI Assistant (n8n)
 
-Jerry is a multi-agent workflow built in [n8n](https://n8n.io) that handles email, calendar, and meeting-notes tasks from a single chat interface. A Master Orchestrator Agent reads each request and routes it to the right specialist agent, which then calls the appropriate tools to complete the task — including chaining multiple agents together for combined requests (e.g. "summarize my last meeting and email the team").
+ multi-agent workflow built in [n8n](https://n8n.io) that handles email, calendar, and meeting-notes tasks from a single chat interface. A Master Orchestrator Agent reads each request and routes it to the right specialist agent, which then calls the appropriate tools to complete the task — including chaining multiple agents together for combined requests (e.g. "summarize my last meeting and email the team").
 
 ## Architecture
 
@@ -30,7 +30,7 @@ Each agent runs its own LLM (Claude Sonnet, via n8n's AI Gateway) and its own sh
 
 ## Setup
 
-1. Import `jerry-multiagent-workflow.json` into your n8n instance (**Workflows → Import from File**).
+1. Import `multiagent-workflow.json` into your n8n instance (**Workflows → Import from File**).
 2. Connect credentials for each service used by the tool nodes:
    - **Gmail** (OAuth2) — used by all 5 Email Agent tools
    - **Google Calendar** (OAuth2) — used by all 5 Calendar Agent tools
